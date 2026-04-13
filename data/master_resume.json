@@ -1,0 +1,56 @@
+{
+  "name": "Candidate Name",
+  "skills": [
+    "Python",
+    "FastAPI",
+    "Machine Learning",
+    "LLM",
+    "RAG",
+    "NLP",
+    "Streamlit",
+    "Docker",
+    "SQL"
+  ],
+  "experience": [
+    {
+      "company": "Nova Analytics",
+      "role": "AI/ML Engineer",
+      "projects": [
+        {
+          "title": "Enterprise RAG Assistant",
+          "skills": ["Python", "LLM", "RAG", "FastAPI", "Embeddings"],
+          "description": "Built a retrieval-augmented generation platform that grounded LLM responses on enterprise documentation with a FastAPI orchestration layer",
+          "impact": "reduced internal support resolution time by 42%",
+          "search_tokens": ["python", "llm", "rag", "fastapi", "retrieval", "generation", "embeddings", "enterprise", "documentation", "api"]
+        },
+        {
+          "title": "Resume Ranking Service",
+          "skills": ["Python", "NLP", "Machine Learning", "SQL"],
+          "description": "Developed an NLP service to parse resumes, extract skills, and rank applicants against job requirements using explainable scoring",
+          "impact": "improved recruiter screening speed by 35%",
+          "search_tokens": ["python", "nlp", "machine", "learning", "resume", "skills", "job", "requirements", "ranking", "scoring", "sql"]
+        }
+      ]
+    },
+    {
+      "company": "Orbit Systems",
+      "role": "Software Engineer",
+      "projects": [
+        {
+          "title": "Microservice Talent Platform",
+          "skills": ["Python", "FastAPI", "Docker", "PostgreSQL", "API"],
+          "description": "Designed backend microservices for candidate profile management, document workflows, and API integrations",
+          "impact": "cut release cycle time by 28%",
+          "search_tokens": ["python", "fastapi", "docker", "postgresql", "api", "microservices", "candidate", "document", "workflow", "backend"]
+        },
+        {
+          "title": "Interactive Insights Dashboard",
+          "skills": ["Streamlit", "Python", "Pandas"],
+          "description": "Created a Streamlit dashboard for operational analytics, model monitoring, and recruiter decision support",
+          "impact": "increased adoption of analytics tooling across three teams",
+          "search_tokens": ["streamlit", "python", "pandas", "dashboard", "analytics", "monitoring", "decision", "support"]
+        }
+      ]
+    }
+  ]
+}
