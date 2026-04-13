@@ -13,6 +13,7 @@ from app.services.ats import compute_ats_score
 from app.services.exporter import ResumeExporter
 from app.services.matcher import rank_projects
 from app.services.parser import parse_job_description
+from app.services.resume_parser import build_resume_data_from_text
 from app.services.rewrite import rewrite_bullet
 
 
@@ -23,7 +24,7 @@ class ResumeOptimizer:
         self.exporter = ResumeExporter(root / "outputs")
 
     def optimize(self, payload: OptimizeResumeRequest) -> OptimizeResumeResponse:
-        resume_data = json.loads(self.data_path.read_text(encoding="utf-8"))
+        resume_data = self._load_resume_data(payload.resume_text)
         parsed = parse_job_description(payload.job_description, payload.target_role)
         ranked = rank_projects(resume_data, parsed["tokens"], parsed["skills"])
         selected = ranked[: payload.max_projects]
@@ -118,3 +119,8 @@ class ResumeOptimizer:
                 f"  {rec.optimized_bullet}"
             )
         return summary + "\n".join(bullets)
+
+    def _load_resume_data(self, resume_text: str | None) -> dict:
+        if resume_text and resume_text.strip():
+            return build_resume_data_from_text(resume_text)
+        return json.loads(self.data_path.read_text(encoding="utf-8"))
