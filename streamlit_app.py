@@ -1,17 +1,33 @@
 from __future__ import annotations
 
 import json
+import os
 
 import httpx
 import streamlit as st
 
+from app.models import OptimizeResumeRequest
+from app.services.optimizer import ResumeOptimizer
 
-API_URL = "http://127.0.0.1:8000/optimize-resume"
+API_URL = os.getenv("RESUME_OPTIMIZER_API_URL", "").strip()
+optimizer = ResumeOptimizer()
+
+
+def optimize_resume(payload: dict) -> dict:
+    if API_URL:
+        response = httpx.post(API_URL, json=payload, timeout=60.0)
+        response.raise_for_status()
+        return response.json()
+    result = optimizer.optimize(OptimizeResumeRequest(**payload))
+    return result.model_dump()
 
 st.set_page_config(page_title="JD-Aware Resume Optimizer", layout="wide")
 
 st.title("JD-Aware AI Resume Optimizer")
 st.caption("Paste a job description, align the resume, and export the result.")
+
+mode_label = f"API mode ({API_URL})" if API_URL else "Standalone mode (hostable without a separate API service)"
+st.info(mode_label)
 
 with st.sidebar:
     st.subheader("Settings")
@@ -32,11 +48,15 @@ if st.button("Optimize Resume", type="primary", use_container_width=True):
             "max_projects": max_projects,
         }
         try:
-            response = httpx.post(API_URL, json=payload, timeout=60.0)
-            response.raise_for_status()
-            data = response.json()
+            data = optimize_resume(payload)
         except Exception as exc:
-            st.error(f"Could not reach the API at {API_URL}. Start FastAPI first. Details: {exc}")
+            if API_URL:
+                st.error(
+                    f"Could not reach the API at {API_URL}. "
+                    f"Set RESUME_OPTIMIZER_API_URL only when a backend is available. Details: {exc}"
+                )
+            else:
+                st.error(f"Optimization failed in standalone mode. Details: {exc}")
         else:
             col1, col2 = st.columns([2, 1])
             with col1:

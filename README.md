@@ -4,10 +4,11 @@ This project implements an MVP of the design doc in `jd_aware_ai_resume_optimize
 It provides:
 
 - A FastAPI backend for resume optimization
-- A Streamlit UI for interactive use
+- A Streamlit UI for interactive use and single-service hosting
 - A structured master resume knowledge base in JSON
 - JD parsing, skill extraction, experience matching, bullet rewriting, ATS scoring, and skill gap analysis
 - Resume export to `DOCX`, `PDF`, and plain text
+- GitHub Actions CI for install and smoke tests
 
 ## Architecture
 
@@ -54,6 +55,38 @@ uvicorn app.main:app --reload
 streamlit run streamlit_app.py
 ```
 
+If you only want a single hostable service, you can skip FastAPI entirely and run just:
+
+```powershell
+streamlit run streamlit_app.py
+```
+
+The Streamlit app now runs in standalone mode by default and calls the optimizer directly in-process.
+If you do want Streamlit to use the API, set `RESUME_OPTIMIZER_API_URL`.
+
+## Hosting
+
+### Option 1: Streamlit Community Cloud
+
+- Push the repo to GitHub
+- Create a new Streamlit app pointed at `streamlit_app.py`
+- No extra backend service is required
+
+### Option 2: Docker-based hosts
+
+This repo includes a `Dockerfile` that serves the Streamlit app directly:
+
+```bash
+docker build -t intelligent-resume .
+docker run -p 8501:8501 intelligent-resume
+```
+
+### Option 3: Split frontend/backend deployment
+
+- Host FastAPI with `uvicorn app.main:app --host 0.0.0.0 --port 8000`
+- Host Streamlit separately
+- Set `RESUME_OPTIMIZER_API_URL` in the Streamlit environment
+
 ## API
 
 ### `POST /optimize-resume`
@@ -80,6 +113,14 @@ Response includes:
 ### `GET /health`
 
 Simple health check endpoint.
+
+## CI
+
+GitHub Actions is configured in `.github/workflows/ci.yml` and runs:
+
+- dependency installation
+- FastAPI smoke tests
+- optimizer import and execution checks
 
 ## Notes
 
