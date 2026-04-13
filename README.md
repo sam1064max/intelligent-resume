@@ -73,6 +73,12 @@ If you do want Streamlit to use the API, set `RESUME_OPTIMIZER_API_URL`.
 - Create a new Streamlit app pointed at `streamlit_app.py`
 - No extra backend service is required
 
+### GitHub Pages
+
+- This repo also includes a GitHub Pages landing page from `docs/`
+- It is useful as a public project URL on GitHub
+- It does not run the interactive Streamlit or FastAPI app
+
 ### Option 2: Docker-based hosts
 
 This repo includes a `Dockerfile` that serves the Streamlit app directly:
