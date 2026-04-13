@@ -1,4 +1,4 @@
-from streamlit_app import optimize_resume
+from app.services.runtime import optimize_resume_payload
 
 
 def test_streamlit_fallback_optimizer() -> None:
@@ -11,7 +11,7 @@ def test_streamlit_fallback_optimizer() -> None:
         "max_projects": 2,
     }
 
-    result = optimize_resume(payload)
+    result = optimize_resume_payload(payload)
 
     assert "optimized_resume" in result
     assert result["ats_score"] >= 0

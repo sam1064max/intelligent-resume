@@ -78,6 +78,7 @@ If you do want Streamlit to use the API, set `RESUME_OPTIMIZER_API_URL`.
 - This repo also includes a GitHub Pages landing page from `docs/`
 - It is useful as a public project URL on GitHub
 - It does not run the interactive Streamlit or FastAPI app
+- Enable GitHub Pages with `Settings -> Pages -> Source: GitHub Actions`, then run the `Pages` workflow manually
 
 ### Option 2: Docker-based hosts
 

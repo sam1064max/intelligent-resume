@@ -3,11 +3,9 @@ from __future__ import annotations
 import json
 import os
 
-import httpx
 import streamlit as st
 
-from app.models import OptimizeResumeRequest
-from app.services.optimizer import ResumeOptimizer
+from app.services.runtime import optimize_resume_payload
 from app.services.telegram import (
     build_optimization_message,
     get_telegram_config,
@@ -15,17 +13,7 @@ from app.services.telegram import (
 )
 
 API_URL = os.getenv("RESUME_OPTIMIZER_API_URL", "").strip()
-optimizer = ResumeOptimizer()
 telegram_config = get_telegram_config()
-
-
-def optimize_resume(payload: dict) -> dict:
-    if API_URL:
-        response = httpx.post(API_URL, json=payload, timeout=60.0)
-        response.raise_for_status()
-        return response.json()
-    result = optimizer.optimize(OptimizeResumeRequest(**payload))
-    return result.model_dump()
 
 st.set_page_config(page_title="JD-Aware Resume Optimizer", layout="wide")
 
@@ -63,7 +51,7 @@ if st.button("Optimize Resume", type="primary", use_container_width=True):
             "max_projects": max_projects,
         }
         try:
-            data = optimize_resume(payload)
+            data = optimize_resume_payload(payload)
         except Exception as exc:
             if API_URL:
                 st.error(
