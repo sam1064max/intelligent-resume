@@ -6,6 +6,7 @@ import os
 import streamlit as st
 
 from app.services.runtime import optimize_resume_payload
+from app.services.resume_parser import extract_resume_text
 from app.services.telegram import (
     build_optimization_message,
     get_telegram_config,
@@ -18,7 +19,7 @@ telegram_config = get_telegram_config()
 st.set_page_config(page_title="JD-Aware Resume Optimizer", layout="wide")
 
 st.title("JD-Aware AI Resume Optimizer")
-st.caption("Paste a job description, align the resume, and export the result.")
+st.caption("Upload or paste a resume, add a job description, and tailor the resume to the role.")
 
 mode_label = f"API mode ({API_URL})" if API_URL else "Standalone mode (hostable without a separate API service)"
 st.info(mode_label)
@@ -38,14 +39,40 @@ with st.sidebar:
 if not telegram_config.enabled:
     st.caption("Telegram notifications are disabled. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to enable them.")
 
-job_description = st.text_area("Job description", height=320, placeholder="Paste the JD here...")
+resume_tab, jd_tab = st.tabs(["Resume", "Job Description"])
+
+with resume_tab:
+    uploaded_resume = st.file_uploader(
+        "Upload resume",
+        type=["txt", "md", "pdf", "docx", "json"],
+        help="TXT, MD, PDF, DOCX, and JSON are supported.",
+    )
+    pasted_resume = st.text_area(
+        "Or paste resume text",
+        height=260,
+        placeholder="Paste your resume content here...",
+    )
+
+with jd_tab:
+    job_description = st.text_area("Job description", height=320, placeholder="Paste the JD here...")
 
 if st.button("Optimize Resume", type="primary", use_container_width=True):
-    if len(job_description.strip()) < 20:
+    resume_text = pasted_resume.strip()
+    if uploaded_resume is not None:
+        try:
+            resume_text = extract_resume_text(uploaded_resume.name, uploaded_resume.getvalue()).strip()
+        except Exception as exc:
+            st.error(f"Could not read the uploaded resume. Details: {exc}")
+            st.stop()
+
+    if len(resume_text) < 20:
+        st.error("Please upload or paste a resume first.")
+    elif len(job_description.strip()) < 20:
         st.error("Please provide a longer job description.")
     else:
         payload = {
             "job_description": job_description,
+            "resume_text": resume_text,
             "target_role": target_role or None,
             "output_format": output_format,
             "max_projects": max_projects,

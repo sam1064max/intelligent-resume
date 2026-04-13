@@ -5,6 +5,7 @@ It provides:
 
 - A FastAPI backend for resume optimization
 - A Streamlit UI for interactive use and single-service hosting
+- Resume upload or paste support for TXT, MD, PDF, DOCX, and JSON
 - A structured master resume knowledge base in JSON
 - JD parsing, skill extraction, experience matching, bullet rewriting, ATS scoring, and skill gap analysis
 - Resume export to `DOCX`, `PDF`, and plain text
@@ -65,6 +66,8 @@ streamlit run streamlit_app.py
 The Streamlit app now runs in standalone mode by default and calls the optimizer directly in-process.
 If you do want Streamlit to use the API, set `RESUME_OPTIMIZER_API_URL`.
 
+In the UI, upload or paste a resume and then paste the job description you want to target.
+
 ## Hosting
 
 ### Option 1: Streamlit Community Cloud
@@ -72,6 +75,7 @@ If you do want Streamlit to use the API, set `RESUME_OPTIMIZER_API_URL`.
 - Push the repo to GitHub
 - Create a new Streamlit app pointed at `streamlit_app.py`
 - No extra backend service is required
+- Streamlit will install from `requirements.txt` automatically
 
 ### GitHub Pages
 

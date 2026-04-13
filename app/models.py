@@ -8,6 +8,7 @@ OutputFormat = Literal["text", "docx", "pdf"]
 
 class OptimizeResumeRequest(BaseModel):
     job_description: str = Field(..., min_length=20, description="Raw job description text")
+    resume_text: str | None = Field(default=None, description="Optional pasted or extracted resume text")
     target_role: str | None = Field(default=None, description="Optional target role override")
     output_format: OutputFormat = Field(default="text")
     max_projects: int = Field(default=4, ge=1, le=8)
