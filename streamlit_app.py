@@ -8,9 +8,15 @@ import streamlit as st
 
 from app.models import OptimizeResumeRequest
 from app.services.optimizer import ResumeOptimizer
+from app.services.telegram import (
+    build_optimization_message,
+    get_telegram_config,
+    send_telegram_message,
+)
 
 API_URL = os.getenv("RESUME_OPTIMIZER_API_URL", "").strip()
 optimizer = ResumeOptimizer()
+telegram_config = get_telegram_config()
 
 
 def optimize_resume(payload: dict) -> dict:
@@ -34,6 +40,15 @@ with st.sidebar:
     target_role = st.text_input("Target role", placeholder="Senior AI Engineer")
     output_format = st.selectbox("Output format", ["text", "docx", "pdf"], index=0)
     max_projects = st.slider("Max projects", min_value=1, max_value=6, value=4)
+    send_telegram_update = st.checkbox(
+        "Send Telegram update",
+        value=False,
+        disabled=not telegram_config.enabled,
+        help="Requires TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID environment variables.",
+    )
+
+if not telegram_config.enabled:
+    st.caption("Telegram notifications are disabled. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID to enable them.")
 
 job_description = st.text_area("Job description", height=320, placeholder="Paste the JD here...")
 
@@ -85,3 +100,18 @@ if st.button("Optimize Resume", type="primary", use_container_width=True):
 
             st.subheader("Structured JD Summary")
             st.code(json.dumps(data["jd_summary"], indent=2), language="json")
+
+            if send_telegram_update:
+                try:
+                    send_telegram_message(
+                        build_optimization_message(
+                            payload["target_role"],
+                            data["ats_score"],
+                            data["matched_skills"],
+                            data["missing_skills"],
+                        )
+                    )
+                except Exception as exc:
+                    st.warning(f"Resume optimized, but Telegram notification failed: {exc}")
+                else:
+                    st.success("Telegram update sent.")

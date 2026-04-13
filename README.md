@@ -9,6 +9,7 @@ It provides:
 - JD parsing, skill extraction, experience matching, bullet rewriting, ATS scoring, and skill gap analysis
 - Resume export to `DOCX`, `PDF`, and plain text
 - GitHub Actions CI for install and smoke tests
+- Optional Telegram notifications for app updates and CI runs
 
 ## Architecture
 
@@ -87,6 +88,50 @@ docker run -p 8501:8501 intelligent-resume
 - Host Streamlit separately
 - Set `RESUME_OPTIMIZER_API_URL` in the Streamlit environment
 
+## Telegram Notifications
+
+You can send optimization updates and CI notifications to Telegram.
+
+### Create the bot
+
+1. Open Telegram and message `@BotFather`
+2. Run `/newbot`
+3. Choose a bot name and username
+4. Copy the bot token
+5. Start a chat with your new bot and send it any message once
+
+### Get your chat ID
+
+Use this URL in a browser after replacing `<TOKEN>`:
+
+```text
+https://api.telegram.org/bot<TOKEN>/getUpdates
+```
+
+Find the `chat` object and copy its `id`.
+
+### App environment variables
+
+Set these where Streamlit runs:
+
+```text
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+```
+
+Once set, the Streamlit sidebar will enable a `Send Telegram update` option after each optimization run.
+
+### GitHub Actions secrets
+
+Add these repository secrets in GitHub:
+
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID`
+
+When those secrets exist, the CI workflow will send Telegram messages for successful and failed runs.
+
+Approvals still happen in GitHub and Codex. Telegram is only used for notifications and status updates.
+
 ## API
 
 ### `POST /optimize-resume`
@@ -121,6 +166,7 @@ GitHub Actions is configured in `.github/workflows/ci.yml` and runs:
 - dependency installation
 - FastAPI smoke tests
 - optimizer import and execution checks
+- optional Telegram success or failure notifications when secrets are configured
 
 ## Notes
 
